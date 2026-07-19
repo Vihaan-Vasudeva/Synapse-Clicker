@@ -70,6 +70,12 @@ root.title("Synapse Clicker")
 root.geometry("800x600")
 root.configure(bg="#1E1E1E")
 
+def game_loop():
+    global total_neurotransmitters
+    total_neurotransmitters += nts_per_second
+    refresh_ui()
+    root.after(1000, game_loop)
+
 
 #fact bar
 fact_bar = tk.Frame(root, bg='#2D2D2D', height=40)
@@ -218,6 +224,8 @@ reset_button.pack(side = "left", padx = 10, pady = 8)
 
 load_button = tk.Button(footer, text = "Load Game", command = load_game, bg = "#393E46", fg="#E0E0E0", relief = "flat", borderwidth = 0)
 load_button.pack(side = "right", padx = 10, pady = 8)
+
+game_loop()
 
 
 root.mainloop()  # lesson learnt: mainloop should always be last
