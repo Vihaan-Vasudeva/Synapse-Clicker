@@ -1,0 +1,3 @@
+([('synapse clicker-v1',
+   '/Users/vihaanvasudeva/Desktop/Synapse Clicker/dist/synapse clicker-v1',
+   'EXECUTABLE')],)
