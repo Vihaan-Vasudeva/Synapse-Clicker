@@ -2,6 +2,7 @@ import tkinter as tk
 import random
 import sys, os
 import json
+from tkinter import messagebox
 
 
 
@@ -11,6 +12,9 @@ def resource_path(relative_path):
     return os.path.join(os.path.abspath("."), relative_path)
 
 from PIL import Image, ImageTk
+
+base_passive = 0
+passive_multiplier = 1.0
 
 SAVE_FILE = "save_data.json"
 
@@ -70,10 +74,20 @@ root.title("Synapse Clicker")
 root.geometry("800x600")
 root.configure(bg="#1E1E1E")
 
+milestones = [100, 1000, 10000, 100000, 1000000]
+milestones_hit = set()
+
+def check_milestones():
+    for m in milestones:
+        if total_neurotransmitters >= m and m not in milestones_hit:
+            milestones_hit.add(m)
+            messagebox.showinfo("Milestone!", f"You've reached {m:,} Neurotransmitters!")
+
 def game_loop():
     global total_neurotransmitters
     total_neurotransmitters += nts_per_second
     refresh_ui()
+    check_milestones()
     root.after(1000, game_loop)
 
 
@@ -133,10 +147,17 @@ def refresh_ui():
         widgets["level_label"].config(text=f"Level: {upgrades[key]['level']}")
         widgets["cost_label"].config(text=f"Cost: {get_cost(key)} NTs  ")
 
+        cost=get_cost(key)
+        if total_neurotransmitters >= cost:
+            widgets["buy_button"].config(bg="#00ADB5", fg="#1E1E1E", state="normal")
+        else:
+            widgets["buy_button"].config(bg="#4A4A4A" , fg = "#8A8A8A", state="disabled") #ts looks so trippy 
+
 def fire_neuron():
     global total_neurotransmitters
     total_neurotransmitters += click_multiplier
     refresh_ui()
+    check_milestones()
 
 def on_press(e):
     neuron_button.config(image=neuron_photo_small)
@@ -180,7 +201,7 @@ def get_cost(key):
 upgrade_widgets = {}
 
 def buy_upgrade(key):
-    global total_neurotransmitters, click_multiplier, nts_per_second
+    global total_neurotransmitters, click_multiplier, nts_per_second, base_passive, passive_multiplier
     cost = get_cost(key)
     if total_neurotransmitters >= cost:
         total_neurotransmitters -= cost
@@ -189,9 +210,11 @@ def buy_upgrade(key):
         if upgrades[key]["effect"] == "click":
             click_multiplier += 1
         elif upgrades[key]["effect"] == "passive":
-            nts_per_second += 1
+            base_passive += 1
         elif upgrades[key]["effect"] == "multiplier":
-            nts_per_second *= 1.5
+            passive_multiplier *= 1.5
+
+        nts_per_second = base_passive * passive_multiplier
 
         refresh_ui()
 
@@ -211,7 +234,7 @@ for key in upgrades:
     buy_button = tk.Button(row, text="Buy", command=lambda k=key: buy_upgrade(k), bg="#393E46", fg="#E0E0E0")
     buy_button.pack(anchor="w", pady=(4, 0))
 
-    upgrade_widgets[key] = {"level_label": level_label, "cost_label": cost_label}
+    upgrade_widgets[key] = {"level_label": level_label, "cost_label": cost_label, "buy_button": buy_button}
 
 footer = tk.Frame(root, bg="#2D2D2D")
 footer.grid(row = 2, column = 0, columnspan = 2, sticky="ew")
@@ -227,5 +250,10 @@ load_button.pack(side = "right", padx = 10, pady = 8)
 
 game_loop()
 
+def on_closing():
+    save_game()
+    root.destroy()
+
+root.protocol("WM_DELETE_WINDOW", on_closing)
 
 root.mainloop()  # lesson learnt: mainloop should always be last
