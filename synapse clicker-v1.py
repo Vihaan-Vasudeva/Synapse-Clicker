@@ -39,41 +39,65 @@ def update_progress_bar():
 SAVE_FILE = "save_data.json"
 
 def save_game():
-    data= {
-        "total_neurotransmitters": total_neurotransmitters,
-        "click_multiplier": click_multiplier,
-        "nts_per_second": nts_per_second,
-        "upgrades": upgrades
-        
-    }
+    data = {
+    "total_neurotransmitters": total_neurotransmitters,
+    "click_multiplier": click_multiplier,
+    "nts_per_second": nts_per_second,
+    "crit_chance": crit_chance,
+    "base_passive": base_passive,
+    "passive_multiplier": passive_multiplier,
+    "total_clicks": total_clicks,
+    "critical_hits":critical_hits,
+    "achievements_unlocked": list(achievements_unlocked), 
+    "milestones_hit": list(milestones_hit),
+    "upgrades": upgrades,
+}
 
     with open(SAVE_FILE, "w") as f:
         json.dump(data,f)
     print("Game Saved!")
 
 def load_game():
-    global total_neurotransmitters, click_multiplier, nts_per_second
+    global total_neurotransmitters, click_multiplier, nts_per_second, crit_chance, base_passive, passive_multiplier, total_clicks, critical_hits, achievements_unlocked, milestones_hit
     if os.path.exists(SAVE_FILE):
         with open(SAVE_FILE, "r") as f:
             data = json.load(f)
             total_neurotransmitters = data["total_neurotransmitters"]
             click_multiplier = data["click_multiplier"]
             nts_per_second = data["nts_per_second"]
+            crit_chance = data.get("crit_chance", 0.10)
+            base_passive = data.get("base_passive", 0)
+            passive_multiplier = data.get("passive_multiplier", 1.0)
+
+            total_clicks = data.get ("total_clicks", 0)
+            critical_hits = data.get("critical_hits", 0)
+
+            achievements_unlocked = set(data.get("achievements_unlocked", []))
+            milestones_hit = set(data.get("milestones_hit", []))
 
             for key in upgrades:
                 upgrades[key]["level"] = data["upgrades"][key]["level"]
+            update_neuron_size()
             refresh_ui()
             print("Game_loaded!")
     else:
         print("No saved file found!")
 
 def reset_game():
-    global total_neurotransmitters, click_multiplier, nts_per_second
+    global total_neurotransmitters, click_multiplier, nts_per_second, base_passive, passive_multiplier, crit_chance, total_clicks, critical_hits, achievements_unlocked, milestones_hit
     total_neurotransmitters = 0
     click_multiplier = 1
     nts_per_second = 0
+    base_passive = 0
+    passive_multiplier = 1.0
+    crit_chance = 0.10
+    total_clicks = 0
+    critical_hits = 0
+    achievements_unlocked = set()
+    milestones_hit = set()
     for key in upgrades:
         upgrades[key]["level"] = 0
+    update_neuron_size()
     refresh_ui()
     print("Game reset!")
 
@@ -91,7 +115,7 @@ neuron_photo = ImageTk.PhotoImage(neuron_img)
 neuron_img_small = Image.open(resource_path("neuron.png")).resize((95,95))
 neuron_photo_small = ImageTk.PhotoImage(neuron_img_small)
 root.title("Synapse Clicker")
-root.geometry("800x600")
+root.geometry("840x640")
 root.configure(bg="#1E1E1E")
 
 milestones = [100, 1000, 10000, 100000, 1000000]
@@ -125,7 +149,7 @@ main_panel.grid(row=1, column=0, sticky='nsew')
 shop_panel = tk.Frame(root, bg='#2D2D2D')
 shop_panel.grid(row=1, column=1, sticky='nsew')
 
-#main content window expands when window resizes
+#main content window expands when window resizes, ai suggestion
 root.grid_rowconfigure(1, weight=1)
 root.grid_columnconfigure(0, weight=3)  # for main panel
 root.grid_columnconfigure(1, weight=1)  # for shop panel getting smaller
@@ -137,6 +161,9 @@ crit_multiplier = 3
 total_neurotransmitters = 0
 click_multiplier = 1
 nts_per_second = 0
+total_clicks = 0
+critical_hits = 0
+achievements_unlocked = set()
 
 #facts content here
 facts = [
@@ -147,11 +174,10 @@ facts = [
     "Did you know that glial cells outnumber neurons in the brain and support, protect and nourish them?",
     "Did you know that action potentials, the electrical signals neurons fire, follow a all or nothing rule?",
     "Did you know that a resting neuron maintains a electrical charge across its membrane, ready to fire at any moment?",
-    "Did you know that the cerebellum, though just 10 percent of the brain volume, contains more than half of the brain's neurons?",
     "Did you know that the brain continues forming new neurons in adulthood, a process called neurogenesis?",
-    "Did you know that the myelin, the fatty sheath around the axons, can speed up signal transmission by over 100 times?",
-
+    #idts anyone will play long enough to see all of em lmao
 ]
+
 fact_label = tk.Label(fact_bar, text=facts[0], bg='#2D2D2D', fg='#E0E0E0', font=('helvetica', 14, "bold"))
 fact_label.pack(pady=8)
 
@@ -179,11 +205,38 @@ progress_bar.pack(pady=(10,0))
 progress_label = tk.Label(main_panel, text="", bg = "#1E1E1E", fg = "#8A8A8A", font = ("Helvetica", 12, "bold"))
 progress_label.pack()
 
+def check_achievements():
+    for name, condition in achievements.items():
+        if name not in achievements_unlocked and condition():
+            achievements_unlocked.add(name)
+            messagebox.showinfo(
+                "Achievement Unlocked!", f" {name}"
+            )
+def show_achievements():
+    print(achievements)
+    window = tk.Toplevel(root)
+    window.title("Achievements")
+    window.geometry("410x250")
+    window.configure(bg="#1E1E1E")
 
-def show_crit_feedback():
-    crit_label = tk.Label(main_panel, text = "Critical Hit!", bg="#1E1E1E", fg = "#FF6B6B", font=("Helvetica", 16, "bold"))
-    crit_label.place(relx=0.5, rely=0.5, anchor="center")
-    root.after(500, crit_label.destroy)
+    title = tk.Label(
+        window,
+        text="Achievements", bg="#1E1E1E", fg = "#D5E520", font=("Helvetica", 18, "bold")
+    )
+    title.pack(pady=15)
+
+    for name in achievements:
+        unlocked = name in achievements_unlocked
+
+        label = tk.Label(
+            window,
+            text=("✓ " if unlocked else "⬜ ") + name,
+            bg = "#1E1E1E", fg = "#E0E0E0" if unlocked else "#777777", anchor = "w", font=("Helvetica", 14, "bold")
+        )
+        label.pack(fill = "x", padx=25, pady=4)
+
+
+
 
 
 def refresh_ui():
@@ -205,17 +258,21 @@ def refresh_ui():
 def show_floating_number(amount, is_crit):
     color = "#FF6B6B" if is_crit else "#00ADB5"
     label = tk.Label(main_panel, text=f"+ {amount}", bg= "#1E1E1E", fg = color, font=("Helvetica", 14, "bold"))
-    label.place(relx=0.5, rely = 0.63, anchor= "center")
+    label.place(relx=0.5, rely = 0.60, anchor= "center")
 
     def animate(step=0):
         if step < 15:
-            label.place(relx = 0.5, rely = 0.63 - (step*0.01), anchor = "center")
+            label.place(relx = 0.5, rely = 0.60 - (step*0.01), anchor = "center")
             root.after(30, lambda: animate(step+1))
         else:
             label.destroy()
 
     animate()
-
+    
+def show_crit_feedback():
+    crit_label = tk.Label(main_panel, text = "Critical Hit!", bg="#1E1E1E", fg = "#FF6B6B", font=("Helvetica", 16, "bold"))
+    crit_label.place(relx=0.5, rely=0.47, anchor="center")
+    root.after(500, crit_label.destroy)
 
 def update_neuron_size():
     global neuron_photo, neuron_photo_small
@@ -229,11 +286,15 @@ def update_neuron_size():
     neuron_photo_small = ImageTk.PhotoImage(resized_small)
 
     neuron_button.config(image = neuron_photo)
-    neuron_button.image = neuron_photo
+    neuron_button.image = neuron_photo  # type: ignore
 
 def fire_neuron():
-    global total_neurotransmitters
+    global total_neurotransmitters, total_clicks, critical_hits
     is_crit = random.random() < crit_chance
+    total_clicks +=1
+
+    if is_crit:
+        critical_hits += 1
     gain = click_multiplier * crit_multiplier if is_crit else click_multiplier
 
     total_neurotransmitters += gain
@@ -242,6 +303,8 @@ def fire_neuron():
     show_floating_number(gain, is_crit)
     if is_crit:
         show_crit_feedback()
+
+    check_achievements()
         
 
 def on_press(e):
@@ -282,6 +345,7 @@ def buy_upgrade(key):
 
         refresh_ui()
         update_neuron_size()
+        check_achievements()
         
 
 
@@ -295,6 +359,14 @@ upgrades = {
     "glial": {"name": "Glial Cell Support", "level": 0, "base_cost": 100, "effect": "passive"},
     "myelin": {"name": "Myelin Sheath", "level": 0, "base_cost": 500, "effect": "multiplier"},
     "plasticity":{"name":"Synaptic Plasticity", "level": 0, "base_cost": 250, "effect": "crit_chance"},
+}
+
+achievements = {
+    "First Clicks": lambda: total_clicks >= 5,
+    "Click Frenzy- Get 500 Clicks": lambda: total_clicks >= 500,
+    "Critical Thinker- Get 50 Critical hits": lambda:critical_hits >= 50,
+    "Growing Netwrok- Get 25 Upgrades": lambda:sum(upgrades[k]["level"] for k in upgrades) >= 25,
+    "Millionaire Brain- Get 1 million Neurotransmitters": lambda:total_neurotransmitters >= 1000000,
 }
 
 #pricing in shop
@@ -333,6 +405,11 @@ save_button.pack(side="left", padx=10, pady=8)
 reset_button = tk.Button(footer, text="Reset", command= reset_game, bg = "#393E46", fg="#E0E0E0", relief="flat", borderwidth = 0)
 reset_button.pack(side = "left", padx = 10, pady = 8)
 
+achievements_button= tk.Button(
+    footer, text = "Achievements", command = show_achievements, bg = "#393E46", fg="#E0E0E0", relief = "flat", borderwidth=0
+    )
+achievements_button.pack(side="left", padx=10, pady=8)
+
 load_button = tk.Button(footer, text = "Load Game", command = load_game, bg = "#393E46", fg="#E0E0E0", relief = "flat", borderwidth = 0)
 load_button.pack(side = "right", padx = 10, pady = 8)
 
@@ -345,4 +422,4 @@ def on_closing():
 root.protocol("WM_DELETE_WINDOW", on_closing)
 
 
-root.mainloop()  # lesson learnt: mainloop should always be last
+root.mainloop()  # lesson learnt: mainloop should always be las
