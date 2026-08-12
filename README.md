@@ -59,5 +59,7 @@ Alternatively, download the pre-built macOS app from the [Releases page](https:/
 - **Save data:** progress is stored in `save_data.json` in the same folder as the app. Delete this file to force a fresh start (or use the in-game Reset button).
 - **neuron.png must stay in the same folder** as the script/app — it's the source image for the clickable neuron and resizes dynamically as you buy upgrades.
 - Built and tested on macOS (Apple Silicon). Should run cross-platform from source via Python, but the compiled binary is macOS-only(sorry!)
+- PS: ignore the index.html, as its not required, it was just something I thought I would do later, but just didnt end up doing
+- PS: ALso, in non-mac OS devices, the scaling might work better in full screen
 
 HAVE FUN PLAYING AND V2 COMING SOON
