@@ -1,0 +1,66 @@
+('/Users/vihaanvasudeva/Library/Mobile '
+ 'Documents/com~apple~CloudDocs/Desktop/Synapse '
+ 'Clicker/build/SynapseClicker/SynapseClicker.pkg',
+ {'BINARY': True,
+  'DATA': True,
+  'EXECUTABLE': True,
+  'EXTENSION': True,
+  'PYMODULE': True,
+  'PYSOURCE': True,
+  'PYZ': False,
+  'SPLASH': True,
+  'SYMLINK': False},
+ [('pyi-contents-directory _internal', '', 'OPTION'),
+  ('PYZ-00.pyz',
+   '/Users/vihaanvasudeva/Library/Mobile '
+   'Documents/com~apple~CloudDocs/Desktop/Synapse '
+   'Clicker/build/SynapseClicker/PYZ-00.pyz',
+   'PYZ'),
+  ('python3.12/lib-dynload/_struct.cpython-312-darwin.so',
+   '/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/lib-dynload/_struct.cpython-312-darwin.so',
+   'EXTENSION'),
+  ('python3.12/lib-dynload/zlib.cpython-312-darwin.so',
+   '/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/lib-dynload/zlib.cpython-312-darwin.so',
+   'EXTENSION'),
+  ('struct',
+   '/Users/vihaanvasudeva/Library/Mobile '
+   'Documents/com~apple~CloudDocs/Desktop/Synapse '
+   'Clicker/build/SynapseClicker/localpycs/struct.pyc',
+   'PYMODULE'),
+  ('pyimod01_archive',
+   '/Users/vihaanvasudeva/Library/Mobile '
+   'Documents/com~apple~CloudDocs/Desktop/Synapse '
+   'Clicker/build/SynapseClicker/localpycs/pyimod01_archive.pyc',
+   'PYMODULE'),
+  ('pyimod02_importers',
+   '/Users/vihaanvasudeva/Library/Mobile '
+   'Documents/com~apple~CloudDocs/Desktop/Synapse '
+   'Clicker/build/SynapseClicker/localpycs/pyimod02_importers.pyc',
+   'PYMODULE'),
+  ('pyimod03_ctypes',
+   '/Users/vihaanvasudeva/Library/Mobile '
+   'Documents/com~apple~CloudDocs/Desktop/Synapse '
+   'Clicker/build/SynapseClicker/localpycs/pyimod03_ctypes.pyc',
+   'PYMODULE'),
+  ('pyiboot01_bootstrap',
+   '/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/PyInstaller/loader/pyiboot01_bootstrap.py',
+   'PYSOURCE'),
+  ('pyi_rth_inspect',
+   '/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/PyInstaller/hooks/rthooks/pyi_rth_inspect.py',
+   'PYSOURCE'),
+  ('pyi_rth__tkinter',
+   '/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/PyInstaller/hooks/rthooks/pyi_rth__tkinter.py',
+   'PYSOURCE'),
+  ('synapse clicker-v1',
+   '/Users/vihaanvasudeva/Library/Mobile '
+   'Documents/com~apple~CloudDocs/Desktop/Synapse Clicker/synapse '
+   'clicker-v1.py',
+   'PYSOURCE')],
+ 'Python',
+ True,
+ False,
+ False,
+ [],
+ 'arm64',
+ None,
+ None)
