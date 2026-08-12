@@ -1,6 +1,6 @@
 # Synapse Clicker
 
-An idle/incremental clicker game themed around growing a neural network, building just as a skill-developing project, to recover my python skills I lost from no coding for 2 years. 
+An idle/incremental clicker game themed around growing a neural network, building just as a skill-developing project, to recover my python skills I lost from basically no coding for 2 years. 
 This is basically Cookie Clicker but with neurons. You click to generate neurotransmitters, then spend them on upgrades that make you generate more automatically.
 
 ## What it does
@@ -19,9 +19,12 @@ This is basically Cookie Clicker but with neurons. You click to generate neurotr
 - Python
 - Tkinter (GUI)
 - JSON (save files)
-- `root.after()` for the passive income loop / fact rotation, so nothing freezes the window while it runs
+- `root.after()` for the loopfact rotation, so nothing should freeze the window while it runs
 
 ## Notes
 
 This was my first time really working with Tkinter, so a decent chunk of the build was debugging stuff like grid layout weirdness, `mainloop()` needing to go at the very end, closures inside loops not capturing values the way I expected, and getting the passive tick loop to run without blocking the UI. Learned a lot doing it.
 I've written notes in the code for what i did wrong along the way so i can keep a note
+
+Screenshot of gameplay:
+<img width="833" height="638" alt="Screenshot 2026-08-12 at 12 40 50 PM" src="https://github.com/user-attachments/assets/0b83ec1f-3239-4e82-b1b4-e782ba6e446a" />
